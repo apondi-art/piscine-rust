@@ -1,5 +1,4 @@
 use std::io;
-use std::io::Write;
 
 fn main() {
     let mut trial = 0;
@@ -9,10 +8,6 @@ fn main() {
     loop {
         println!("{}", riddle);
         trial += 1;
-        
-        // This prompt is for the user but won't be captured in test output
-        print!("Enter your guess: ");
-        io::stdout().flush().expect("Failed to flush stdout");
         
         let mut guess = String::new();
         io::stdin()
