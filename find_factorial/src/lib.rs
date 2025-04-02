@@ -4,7 +4,7 @@ pub fn factorial(num: u64) -> u64 {
         result *= i;
     }
     result
-}}
+}
 
 // #[cfg(test)]
 // mod tests {
