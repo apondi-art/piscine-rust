@@ -3,11 +3,11 @@ use std::io::Write;
 
 fn main() {
     let mut trial = 0;
-    let answer = "The letter e"; // Using &str instead of String for simplicity
+    let answer = "The letter e";
+    let riddle = "I am the beginning of the end, and the end of time and space. I am essential to creation, and I surround every place. What am I?";
     
-   
-
     loop {
+        println!("{}", riddle);
         trial += 1;
         
         print!("Enter your guess: ");
@@ -18,19 +18,11 @@ fn main() {
             .read_line(&mut guess)
             .expect("Failed to read line");
         
-         // Store the original input (trimmed) for display
-         let original_guess = guess.trim().to_string();
-         // Create lowercase version for comparison
-         let normalized_guess = original_guess.to_lowercase();
+        let normalized_guess = guess.trim().to_lowercase();
         
         if normalized_guess == answer.to_lowercase() {
-            println!("{}", answer);
             println!("Number of trials: {}", trial);
             break;
         }
-        
-        // Print the riddle again for the next attempt
-        println!("\nI am the beginning of the end, and the end of time and space. I am essential to creation, and I surround every place. What am I?");
-        println!("{original_guess}");
     }
 }
