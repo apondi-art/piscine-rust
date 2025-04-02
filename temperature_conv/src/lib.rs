@@ -1,6 +1,5 @@
 pub fn fahrenheit_to_celsius(f: f64) -> f64 {
-    let result = (f - 32.0) * 5.0 / 9.0;
-    (result * 1000000000000000.0).round() / 1000000000000000.0 // Round to 15 decimal places
+    (f-32.0)* 0.6
 }
 
 pub fn celsius_to_fahrenheit(c: f64) -> f64 {
