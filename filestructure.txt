@@ -1,0 +1,62 @@
+|-- borrow
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
+|-- division_and_remainder
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
+|-- doubtful
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
+|-- fibonacci2
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
+|-- find_factorial
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
+|-- groceries
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
+|-- looping
+    |-- Cargo.lock
+    |-- Cargo.toml
+    |-- src
+        |-- main.rs
+|-- matrix_transposition
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
+|-- reverse_string
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
+|-- scalar
+    |-- Cargo.lock
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
+|-- speed_transformation
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
+|-- string_literals
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
+|-- temperature_conv
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
+|-- to_url
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
+|-- tuples_refs
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
