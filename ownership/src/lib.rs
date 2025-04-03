@@ -1,9 +1,8 @@
 pub fn first_subword(s: String) -> String {
     s.chars()
-        .take_while(|&c| c != '_')
+        .take_while(|&c| c.is_lowercase() && c != '_')  // Stops at uppercase or '_'
         .collect()
 }
-
 // #[cfg(test)]
 // mod tests {
 //     use super::*;
