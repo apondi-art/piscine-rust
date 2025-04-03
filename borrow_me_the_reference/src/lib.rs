@@ -1,28 +1,30 @@
 pub fn delete_and_backspace(s: &mut String) {
     let mut result = Vec::new();
-    let mut to_skip = 0;
     
     for c in s.chars() {
-        if to_skip > 0 {
-            to_skip -= 1;
-            continue;
-        }
-        
         match c {
             '-' => {
-                if !result.is_empty() {
-                    result.pop();
-                }
+                // Backspace: remove last character if exists
+                result.pop();
             },
             '+' => {
-                to_skip = 1;
+                // Delete: mark next character for deletion
+                result.push('\0'); // Special marker
             },
             _ => {
-                result.push(c);
+                // Handle pending delete operation
+                if let Some('\0') = result.last() {
+                    result.pop(); // Remove the marker
+                    // Don't push this character (it's being deleted)
+                } else {
+                    result.push(c);
+                }
             }
         }
     }
     
+    // Remove any remaining delete markers (from trailing '+')
+    result.retain(|&c| c != '\0');
     *s = result.into_iter().collect();
 }
 
