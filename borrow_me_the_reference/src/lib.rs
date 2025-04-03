@@ -1,25 +1,24 @@
 pub fn delete_and_backspace(s: &mut String) {
     let mut result = Vec::new();
-    let chars = s.chars().collect::<Vec<char>>();
-    let mut i = 0;
+    let mut to_skip = 0;
     
-    while i < chars.len() {
-        match chars[i] {
+    for c in s.chars() {
+        if to_skip > 0 {
+            to_skip -= 1;
+            continue;
+        }
+        
+        match c {
             '-' => {
-                // Backspace: remove last character if exists
                 if !result.is_empty() {
                     result.pop();
                 }
-                i += 1;
             },
             '+' => {
-                // Delete: skip this and next character
-                i += 2;
+                to_skip = 1;
             },
-            c => {
-                // Normal character: add to result
+            _ => {
                 result.push(c);
-                i += 1;
             }
         }
     }
@@ -27,17 +26,23 @@ pub fn delete_and_backspace(s: &mut String) {
     *s = result.into_iter().collect();
 }
 
-pub fn do_operations(v: &mut [String]) {  // Changed parameter type
+pub fn do_operations(v: &mut [String]) {
     for equation in v.iter_mut() {
         if let Some(plus_pos) = equation.find('+') {
-            let a = equation[..plus_pos].parse::<i32>().unwrap();
-            let b = equation[plus_pos+1..].parse::<i32>().unwrap();
-            *equation = (a + b).to_string();
+            if let (Ok(a), Ok(b)) = (
+                equation[..plus_pos].parse::<i32>(),
+                equation[plus_pos+1..].parse::<i32>(),
+            ) {
+                *equation = (a + b).to_string();
+            }
         } else if let Some(minus_pos) = equation.find('-') {
             if minus_pos > 0 {
-                let a = equation[..minus_pos].parse::<i32>().unwrap();
-                let b = equation[minus_pos+1..].parse::<i32>().unwrap();
-                *equation = (a - b).to_string();
+                if let (Ok(a), Ok(b)) = (
+                    equation[..minus_pos].parse::<i32>(),
+                    equation[minus_pos+1..].parse::<i32>(),
+                ) {
+                    *equation = (a - b).to_string();
+                }
             }
         }
     }
