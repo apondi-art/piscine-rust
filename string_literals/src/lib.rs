@@ -15,9 +15,8 @@ pub fn contains(v: &str, pat: &str) -> bool {
 pub fn split_at(v: &str, index: usize) -> (&str, &str) {
     v.split_at(index)
 }
-
-pub fn find(v: &str, pat: char) -> Option<usize> {
-    v.find(pat)
+pub fn find(v: &str, pat: char) -> usize {
+    v.find(pat).expect("Character not found")
 }
 
 
