@@ -3,7 +3,12 @@ pub fn initials(names: Vec<&str>) -> Vec<String> {
         .map(|name| {
             name.split_whitespace()
                 .filter_map(|word| word.chars().next())
-                .map(|c| c.to_ascii_uppercase().to_string() + ".")
+                .map(|c| {
+                    let mut s = String::with_capacity(2);
+                    s.push(c.to_ascii_uppercase());
+                    s.push('.');
+                    s
+                })
                 .collect::<Vec<_>>()
                 .join(" ")
         })
