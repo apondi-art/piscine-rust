@@ -1,14 +1,16 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
+pub fn first_subword(s: String) -> String {
+    s.chars()
+        .take_while(|&c| c.is_lowercase() && c != '_')
+        .collect()
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+//     #[test]
+//     fn it_works() {
+//         let result = add(2, 2);
+//         assert_eq!(result, 4);
+//     }
+// }
