@@ -1,6 +1,6 @@
 pub fn first_subword(s: String) -> String {
     s.chars()
-        .take_while(|&c| c.is_lowercase() && c != '_')
+        .take_while(|&c| c != '_')
         .collect()
 }
 
