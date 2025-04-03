@@ -5,10 +5,16 @@ pub fn delete_and_backspace(s: &mut String) {
     
     while i < chars.len() {
         match chars[i] {
-            '-' => result.pop(),
-            '+' => { i += 1; None },
-            c => Some(result.push(c)),
-        };
+            '-' => {
+                result.pop();
+            },
+            '+' => {
+                i += 1;  // Skip the next character
+            },
+            c => {
+                result.push(c);
+            }
+        }
         i += 1;
     }
     
