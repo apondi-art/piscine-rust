@@ -1,21 +1,21 @@
 pub fn first_subword(s: String) -> String {
-    let mut chars = s.chars();
-    match chars.next() {
-        Some(first_char) => {
-            let mut result = String::new();
-            result.push(first_char);
-            
-            if first_char.is_lowercase() {
-                // For lowercase-starting words: take until uppercase or '_'
-                result.extend(chars.take_while(|&c| c.is_lowercase() && c != '_'));
-            } else {
-                // For uppercase-starting words: take until '_'
-                result.extend(chars.take_while(|&c| c != '_'));
-            }
-            result
+    let mut result = String::new();
+    let mut first_char = true;
+    
+    for c in s.chars() {
+        if c == '_' {
+            break;
         }
-        None => String::new(), // handle empty string case
+        
+        if !first_char && c.is_uppercase() {
+            break;
+        }
+        
+        result.push(c);
+        first_char = false;
     }
+    
+    result
 }
 // #[cfg(test)]
 // mod tests {
