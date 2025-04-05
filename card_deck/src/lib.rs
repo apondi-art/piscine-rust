@@ -67,7 +67,7 @@ impl Rank {
 }
 
 pub fn winner_card(card: &Card) -> bool {
-    *card == Card {
+    *card == &Card {
         suit: Suit::Spade,
         rank: Rank::Ace,
     }
