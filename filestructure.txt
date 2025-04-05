@@ -1,4 +1,20 @@
+|-- arrange_it
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
 |-- borrow
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
+|-- borrow_me_the_reference
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
+|-- changes
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
+|-- copy
     |-- Cargo.toml
     |-- src
         |-- lib.rs
@@ -31,6 +47,14 @@
     |-- Cargo.toml
     |-- src
         |-- lib.rs
+|-- name_initials
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
+|-- ownership
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
 |-- reverse_string
     |-- Cargo.toml
     |-- src
@@ -49,6 +73,10 @@
     |-- src
         |-- lib.rs
 |-- temperature_conv
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
+|-- tic_tac_toe
     |-- Cargo.toml
     |-- src
         |-- lib.rs
