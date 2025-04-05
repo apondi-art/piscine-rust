@@ -1,5 +1,3 @@
-use std::time::{SystemTime, UNIX_EPOCH};
-
 #[derive(Debug, PartialEq)]
 pub enum Suit {
     Heart,
@@ -17,6 +15,7 @@ pub enum Rank {
     Number(u8),
 }
 
+#[derive(Debug, PartialEq)]
 pub struct Card {
     pub suit: Suit,
     pub rank: Rank,
@@ -24,6 +23,8 @@ pub struct Card {
 
 impl Suit {
     pub fn random() -> Suit {
+        // Simple pseudo-random implementation
+        use std::time::{SystemTime, UNIX_EPOCH};
         let seed = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
@@ -37,13 +38,15 @@ impl Suit {
             2 => Suit::Diamond,
             3 => Suit::Spade,
             4 => Suit::Club,
-            _ => Suit::Heart,
+            _ => Suit::Heart, // default fallback
         }
     }
 }
 
 impl Rank {
     pub fn random() -> Rank {
+        // Simple pseudo-random implementation
+        use std::time::{SystemTime, UNIX_EPOCH};
         let seed = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
@@ -58,11 +61,14 @@ impl Rank {
             11 => Rank::Jack,
             12 => Rank::Queen,
             13 => Rank::King,
-            _ => Rank::Ace,
+            _ => Rank::Ace, // default fallback
         }
     }
 }
 
 pub fn winner_card(card: &Card) -> bool {
-    card.rank == Rank::Ace && card.suit == Suit::Spade
+    *card == Card {
+        suit: Suit::Spade,
+        rank: Rank::Ace,
+    }
 }
