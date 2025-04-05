@@ -23,13 +23,12 @@ pub struct Card {
 
 impl Suit {
     pub fn random() -> Suit {
-        // Simple pseudo-random implementation
-        use std::time::{SystemTime, UNIX_EPOCH};
-        let seed = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .subsec_nanos();
-        Suit::translate((seed % 4 + 1) as u8)
+        match rand::random::<u8>() % 4 {
+            0 => Suit::Heart,
+            1 => Suit::Diamond,
+            2 => Suit::Spade,
+            _ => Suit::Club,
+        }
     }
 
     pub fn translate(value: u8) -> Suit {
@@ -38,34 +37,35 @@ impl Suit {
             2 => Suit::Diamond,
             3 => Suit::Spade,
             4 => Suit::Club,
-            _ => Suit::Heart,
+            _ => Suit::Heart, // default to Heart if invalid
         }
     }
 }
 
 impl Rank {
     pub fn random() -> Rank {
-        // Simple pseudo-random implementation
-        use std::time::{SystemTime, UNIX_EPOCH};
-        let seed = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .subsec_nanos();
-        Rank::translate((seed % 13 + 1) as u8)
+        match rand::random::<u8>() % 13 + 1 {
+            1 => Rank::Ace,
+            11 => Rank::Jack,
+            12 => Rank::Queen,
+            13 => Rank::King,
+            n => Rank::Number(n),
+        }
     }
 
     pub fn translate(value: u8) -> Rank {
         match value {
             1 => Rank::Ace,
-            2..=10 => Rank::Number(value),
             11 => Rank::Jack,
             12 => Rank::Queen,
             13 => Rank::King,
-            _ => Rank::Ace,
+            n @ 2..=10 => Rank::Number(n),
+            _ => Rank::Ace, // default to Ace if invalid
         }
     }
 }
 
 pub fn winner_card(card: &Card) -> bool {
+    // The winning card is Ace of Spades
     card.suit == Suit::Spade && card.rank == Rank::Ace
 }
