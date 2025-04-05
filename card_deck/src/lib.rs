@@ -66,7 +66,7 @@ impl Rank {
     }
 }
 
-pub fn winner_card(card: &Card) -> bool {
+pub fn winner_card(card: Card) -> bool {
     // The winning card is Ace of Spades
     card.suit == Suit::Spade && card.rank == Rank::Ace
 }
