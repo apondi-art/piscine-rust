@@ -1,3 +1,7 @@
 |-- Cargo.toml
+|-- circle
+    |-- Cargo.toml
+    |-- src
+        |-- lib.rs
 |-- src
     |-- lib.rs
