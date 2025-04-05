@@ -38,7 +38,7 @@ impl Suit {
             2 => Suit::Diamond,
             3 => Suit::Spade,
             4 => Suit::Club,
-            _ => Suit::Heart, // default fallback
+            _ => Suit::Heart,
         }
     }
 }
@@ -61,13 +61,13 @@ impl Rank {
             11 => Rank::Jack,
             12 => Rank::Queen,
             13 => Rank::King,
-            _ => Rank::Ace, // default fallback
+            _ => Rank::Ace,
         }
     }
 }
 
 pub fn winner_card(card: &Card) -> bool {
-    *card == &Card {
+    *card == Card {
         suit: Suit::Spade,
         rank: Rank::Ace,
     }
