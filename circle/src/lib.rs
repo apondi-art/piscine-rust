@@ -7,7 +7,7 @@ pub struct Circle {
 impl Circle {
     pub fn new(x: f64, y: f64, radius: f64) -> Self {
         Circle {
-            center: Point(x, y),
+            center: Point::new(x, y),
             radius,
         }
     }
@@ -26,21 +26,14 @@ impl Circle {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub struct Point(f64, f64);
+pub struct Point(pub f64, pub f64);
 
 impl Point {
+    pub fn new(x: f64, y: f64) -> Self {
+        Point(x, y)
+    }
+
     pub fn distance(&self, other: Point) -> f64 {
-        ((self.0 - other.0).powi(2) + ((self.1 - other.1).powi(2)).sqrt())
+        ((self.0 - other.0).powi(2) + (self.1 - other.1).powi(2)).sqrt()
     }
 }
-
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-
-//     #[test]
-//     fn it_works() {
-//         let result = add(2, 2);
-//         assert_eq!(result, 4);
-//     }
-// }
