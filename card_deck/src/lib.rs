@@ -23,12 +23,13 @@ pub struct Card {
 
 impl Suit {
     pub fn random() -> Suit {
-        match rand::random::<u8>() % 4 {
-            0 => Suit::Heart,
-            1 => Suit::Diamond,
-            2 => Suit::Spade,
-            _ => Suit::Club,
-        }
+        // Simple pseudo-random implementation using system time
+        use std::time::{SystemTime, UNIX_EPOCH};
+        let seed = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .subsec_nanos();
+        Suit::translate((seed % 4 + 1) as u8)
     }
 
     pub fn translate(value: u8) -> Suit {
@@ -44,13 +45,13 @@ impl Suit {
 
 impl Rank {
     pub fn random() -> Rank {
-        match rand::random::<u8>() % 13 + 1 {
-            1 => Rank::Ace,
-            11 => Rank::Jack,
-            12 => Rank::Queen,
-            13 => Rank::King,
-            n => Rank::Number(n),
-        }
+        // Simple pseudo-random implementation using system time
+        use std::time::{SystemTime, UNIX_EPOCH};
+        let seed = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .subsec_nanos();
+        Rank::translate((seed % 13 + 1) as u8)
     }
 
     pub fn translate(value: u8) -> Rank {
