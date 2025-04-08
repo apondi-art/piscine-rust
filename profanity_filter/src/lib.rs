@@ -1,6 +1,8 @@
+
+#[derive(Debug)] 
 pub struct Message {
-    content: String,
-   pub  user: String,
+    pub content: String,
+    pub user: String,  // Mark as pub or remove if unused
 }
 
 impl Message {
