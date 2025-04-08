@@ -31,9 +31,7 @@ impl TodoList {
 
         // Get title
         let title = parsed["title"].as_str()
-            .ok_or_else(|| {
-                Box::new(ParseErr::Malformed(Box::new(std::fmt::Error))) as Box<dyn Error>
-            })?
+            .ok_or_else(|| ParseErr::Malformed(Box::new(std::fmt::Error)))?
             .to_string();
 
         // Get tasks
@@ -52,20 +50,14 @@ impl TodoList {
         let mut tasks = Vec::new();
         for task in tasks_value.members() {
             let id = task["id"].as_u32()
-                .ok_or_else(|| {
-                    Box::new(ParseErr::Malformed(Box::new(std::fmt::Error))) as Box<dyn Error>
-                })?;
+                .ok_or_else(|| ParseErr::Malformed(Box::new(std::fmt::Error)))?;
 
             let description = task["description"].as_str()
-                .ok_or_else(|| {
-                    Box::new(ParseErr::Malformed(Box::new(std::fmt::Error))) as Box<dyn Error>
-                })?
+                .ok_or_else(|| ParseErr::Malformed(Box::new(std::fmt::Error)))?
                 .to_string();
 
             let level = task["level"].as_u32()
-                .ok_or_else(|| {
-                    Box::new(ParseErr::Malformed(Box::new(std::fmt::Error))) as Box<dyn Error>
-                })?;
+                .ok_or_else(|| ParseErr::Malformed(Box::new(std::fmt::Error)))?;
 
             tasks.push(Task { id, description, level });
         }
