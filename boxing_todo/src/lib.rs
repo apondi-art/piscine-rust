@@ -23,21 +23,15 @@ impl TodoList {
     pub fn get_todo(path: &str) -> Result<TodoList, Box<dyn Error>> {
         // Read file
         let content = fs::read_to_string(path)
-            .map_err(|e| {
-                let read_err = ReadErr {
-                    child_err: Box::new(e),
-                };
-                Box::new(read_err) as Box<dyn Error>
-            })?;
+            .map_err(|e| Box::new(ReadErr { child_err: Box::new(e) }) as Box<dyn Error>)?;
 
-        // Parse JSON
-        let parsed = match json::parse(&content) {
-            Ok(p) => p,
-            Err(e) => {
+        // Parse JSON - this is where we need to ensure proper error source
+        let parsed = json::parse(&content)
+            .map_err(|e| {
                 let parse_err = ParseErr::Malformed(Box::new(e));
-                return Err(Box::new(parse_err));
-            }
-        };
+                // Important: We need to box the ParseErr itself
+                Box::new(parse_err) as Box<dyn Error>
+            })?;
 
         // Get title
         let title = parsed["title"].as_str()
