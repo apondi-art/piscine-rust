@@ -1,4 +1,4 @@
-use chrono::{Local, Utc};  // Import both Local and Utc
+use chrono::Utc;  // Import Utc instead of Local
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct FormError {
@@ -11,7 +11,7 @@ impl FormError {
     pub fn new(field_name: &'static str, field_value: String, err: &'static str) -> Self {
         FormError {
             form_values: (field_name, field_value),
-            date: Local::now().format("%Y-%m-%d %H:%M:%S").to_string(),  // Using Local instead of Utc
+            date: Utc::now().format("%Y-%m-%d %H:%M:%S").to_string(),  // Use Utc here
             err,
         }
     }
