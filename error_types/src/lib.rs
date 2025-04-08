@@ -43,7 +43,7 @@ impl Form {
         let has_letter = self.password.chars().any(|c| c.is_ascii_alphabetic());
         let has_number = self.password.chars().any(|c| c.is_ascii_digit());
         let has_symbol = self.password.chars().any(|c| {
-            c.is_ascii_punctuation() || c.is_ascii_symbol()
+            c.is_ascii_punctuation() || !c.is_ascii_alphanumeric()
         });
 
         if !(has_letter && has_number && has_symbol) {
