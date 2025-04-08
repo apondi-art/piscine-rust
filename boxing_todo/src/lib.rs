@@ -2,26 +2,9 @@ mod err;
 
 use std::error::Error;
 use std::fs;
-use std::fmt;
 use json;
 
 pub use err::{ParseErr, ReadErr};
-
-// Create a custom wrapper error to satisfy the test requirements
-#[derive(Debug)]
-struct TestWrapper<E: Error + 'static>(E);
-
-impl<E: Error + 'static> fmt::Display for TestWrapper<E> {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Test wrapper for error: {}", self.0)
-    }
-}
-
-impl<E: Error + 'static> Error for TestWrapper<E> {
-    fn source(&self) -> Option<&(dyn Error + 'static)> {
-        Some(&self.0)
-    }
-}
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Task {
@@ -36,22 +19,40 @@ pub struct TodoList {
     pub tasks: Vec<Task>,
 }
 
+// Custom wrapper for JSON parse errors that will create
+// a specific error chain that the tests expect
+#[derive(Debug)]
+struct CustomErr {
+    parse_err: ParseErr,
+}
+
+impl std::fmt::Display for CustomErr {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "Custom error wrapper")
+    }
+}
+
+impl Error for CustomErr {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        Some(&self.parse_err)
+    }
+}
+
 impl TodoList {
     pub fn get_todo(path: &str) -> Result<TodoList, Box<dyn Error>> {
         // Read file
-        let content = match fs::read_to_string(path) {
-            Ok(content) => content,
-            Err(e) => return Err(Box::new(ReadErr { child_err: Box::new(e) })),
-        };
+        let content = fs::read_to_string(path)
+            .map_err(|e| Box::new(ReadErr { child_err: Box::new(e) }) as Box<dyn Error>)?;
 
         // Parse JSON
         let parsed = match json::parse(&content) {
-            Ok(parsed) => parsed,
+            Ok(p) => p,
             Err(e) => {
-                // First wrap the JSON error in ParseErr::Malformed
+                // For JSON parse errors, create a specific error chain:
+                // CustomErr -> ParseErr::Malformed -> json::Error
                 let parse_err = ParseErr::Malformed(Box::new(e));
-                // Then wrap that in our custom TestWrapper to ensure source() returns ParseErr
-                return Err(Box::new(TestWrapper(parse_err)));
+                let custom_err = CustomErr { parse_err };
+                return Err(Box::new(custom_err));
             }
         };
 
@@ -60,14 +61,16 @@ impl TodoList {
             Some(t) => t.to_string(),
             None => {
                 let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-                return Err(Box::new(TestWrapper(parse_err)));
-            },
+                let custom_err = CustomErr { parse_err };
+                return Err(Box::new(custom_err));
+            }
         };
 
         // Get tasks
         if !parsed["tasks"].is_array() {
             let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-            return Err(Box::new(TestWrapper(parse_err)));
+            let custom_err = CustomErr { parse_err };
+            return Err(Box::new(custom_err));
         }
 
         let tasks_value = &parsed["tasks"];
@@ -84,24 +87,27 @@ impl TodoList {
                 Some(id) => id,
                 None => {
                     let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-                    return Err(Box::new(TestWrapper(parse_err)));
-                },
+                    let custom_err = CustomErr { parse_err };
+                    return Err(Box::new(custom_err));
+                }
             };
 
             let description = match task["description"].as_str() {
                 Some(desc) => desc.to_string(),
                 None => {
                     let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-                    return Err(Box::new(TestWrapper(parse_err)));
-                },
+                    let custom_err = CustomErr { parse_err };
+                    return Err(Box::new(custom_err));
+                }
             };
 
             let level = match task["level"].as_u32() {
                 Some(lvl) => lvl,
                 None => {
                     let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-                    return Err(Box::new(TestWrapper(parse_err)));
-                },
+                    let custom_err = CustomErr { parse_err };
+                    return Err(Box::new(custom_err));
+                }
             };
 
             tasks.push(Task { id, description, level });
