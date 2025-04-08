@@ -6,8 +6,8 @@ pub struct Message {
 }
 
 impl Message {
-    pub fn new(content: String, user: String) -> Message {
-        Message { content, user }
+    pub fn new(content: String, user: String) -> Self {
+        Self { content, user }
     }
 
     pub fn send_ms(&self) -> Option<&str> {
@@ -19,9 +19,10 @@ impl Message {
     }
 }
 
-pub fn check_ms(message: &Message) -> (bool, &str) {
-    match message.send_ms() {
-        Some(content) => (true, content),
-        None => (false, "ERROR: illegal"),
+pub fn check_ms(message: &str) -> Result<&str, &str> {
+    if message.is_empty() || message.to_lowercase().contains("stupid") {
+        Err("ERROR: illegal")
+    } else {
+        Ok(message)
     }
 }
