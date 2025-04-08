@@ -1,5 +1,6 @@
 use std::{error::Error, fmt::Display};
 
+#[derive(Debug)]
 pub enum ParseErr {
     Empty,
     Malformed(Box<dyn Error>),
@@ -20,6 +21,7 @@ impl Error for ParseErr {
     }
 }
 
+#[derive(Debug)]
 pub struct ReadErr {
     pub child_err: Box<dyn Error>,
 }

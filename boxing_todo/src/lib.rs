@@ -3,7 +3,6 @@ mod err;
 use std::error::Error;
 use std::fs;
 use serde::Deserialize;
-use json::Error as JsonError;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Task {
@@ -38,7 +37,7 @@ impl TodoList {
             .map_err(|e| Box::new(err::ReadErr { child_err: Box::new(e) }))?;
 
         // Parse JSON
-        let raw_todo: RawTodoList = json::from_str(&content)
+        let raw_todo: RawTodoList = serde_json::from_str(&content)
             .map_err(|e| Box::new(err::ParseErr::Malformed(Box::new(e))))?;
 
         // Check if tasks is empty
