@@ -25,29 +25,23 @@ impl TodoList {
         let content = fs::read_to_string(path)
             .map_err(|e| Box::new(ReadErr { child_err: Box::new(e) }) as Box<dyn Error>)?;
 
-        // Parse JSON - handle malformed case specially
-        let parsed = match json::parse(&content) {
-            Ok(p) => p,
-            Err(e) => {
-                // Create a nested ParseErr structure
-                let inner_err = ParseErr::Malformed(Box::new(e));
-                let outer_err = ParseErr::Malformed(Box::new(inner_err));
-                return Err(Box::new(outer_err));
-            }
-        };
+        // Parse JSON - keep original json::Error as source
+        let parsed = json::parse(&content)
+            .map_err(|e| {
+                // Create ParseErr with json::Error as source
+                Box::new(ParseErr::Malformed(Box::new(e))) as Box<dyn Error>
+            })?;
 
         // Get title
         let title = parsed["title"].as_str()
             .ok_or_else(|| {
-                let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-                Box::new(parse_err)
+                Box::new(ParseErr::Malformed(Box::new(std::fmt::Error))) as Box<dyn Error>
             })?
             .to_string();
 
         // Get tasks
         if !parsed["tasks"].is_array() {
-            let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-            return Err(Box::new(parse_err));
+            return Err(Box::new(ParseErr::Malformed(Box::new(std::fmt::Error))));
         }
 
         let tasks_value = &parsed["tasks"];
@@ -62,21 +56,18 @@ impl TodoList {
         for task in tasks_value.members() {
             let id = task["id"].as_u32()
                 .ok_or_else(|| {
-                    let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-                    Box::new(parse_err)
+                    Box::new(ParseErr::Malformed(Box::new(std::fmt::Error))) as Box<dyn Error>
                 })?;
 
             let description = task["description"].as_str()
                 .ok_or_else(|| {
-                    let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-                    Box::new(parse_err)
+                    Box::new(ParseErr::Malformed(Box::new(std::fmt::Error))) as Box<dyn Error>
                 })?
                 .to_string();
 
             let level = task["level"].as_u32()
                 .ok_or_else(|| {
-                    let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-                    Box::new(parse_err)
+                    Box::new(ParseErr::Malformed(Box::new(std::fmt::Error))) as Box<dyn Error>
                 })?;
 
             tasks.push(Task { id, description, level });
