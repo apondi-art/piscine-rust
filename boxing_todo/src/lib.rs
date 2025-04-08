@@ -22,35 +22,30 @@ pub struct TodoList {
 impl TodoList {
     pub fn get_todo(path: &str) -> Result<TodoList, Box<dyn Error>> {
         // Read file
-        let content = fs::read_to_string(path)
-            .map_err(|e| Box::new(ReadErr { child_err: Box::new(e) }) as Box<dyn Error>)?;
+        let content = match fs::read_to_string(path) {
+            Ok(content) => content,
+            Err(e) => return Err(Box::new(ReadErr { child_err: Box::new(e) })),
+        };
 
-        // Parse JSON with proper error nesting
+        // Parse JSON
         let parsed = match json::parse(&content) {
-            Ok(p) => p,
+            Ok(parsed) => parsed,
             Err(e) => {
-                // Create a ParseErr::Malformed that contains the json::Error
-                let parse_err = ParseErr::Malformed(Box::new(e));
-                // We need another error to wrap parse_err to satisfy the test
-                // Using a ReadErr to wrap the ParseErr
-                return Err(Box::new(ReadErr { 
-                    child_err: Box::new(parse_err) 
-                }));
+                // This is the structure the test seems to expect:
+                // The JSON error directly wrapped in ParseErr::Malformed
+                return Err(Box::new(ParseErr::Malformed(Box::new(e))));
             }
         };
 
         // Get title
-        let title = parsed["title"].as_str()
-            .ok_or_else(|| {
-                let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-                Box::new(ReadErr { child_err: Box::new(parse_err) })
-            })?
-            .to_string();
+        let title = match parsed["title"].as_str() {
+            Some(t) => t.to_string(),
+            None => return Err(Box::new(ParseErr::Malformed(Box::new(std::fmt::Error)))),
+        };
 
         // Get tasks
         if !parsed["tasks"].is_array() {
-            let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-            return Err(Box::new(ReadErr { child_err: Box::new(parse_err) }));
+            return Err(Box::new(ParseErr::Malformed(Box::new(std::fmt::Error))));
         }
 
         let tasks_value = &parsed["tasks"];
@@ -63,24 +58,20 @@ impl TodoList {
         // Parse tasks
         let mut tasks = Vec::new();
         for task in tasks_value.members() {
-            let id = task["id"].as_u32()
-                .ok_or_else(|| {
-                    let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-                    Box::new(ReadErr { child_err: Box::new(parse_err) })
-                })?;
+            let id = match task["id"].as_u32() {
+                Some(id) => id,
+                None => return Err(Box::new(ParseErr::Malformed(Box::new(std::fmt::Error)))),
+            };
 
-            let description = task["description"].as_str()
-                .ok_or_else(|| {
-                    let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-                    Box::new(ReadErr { child_err: Box::new(parse_err) })
-                })?
-                .to_string();
+            let description = match task["description"].as_str() {
+                Some(desc) => desc.to_string(),
+                None => return Err(Box::new(ParseErr::Malformed(Box::new(std::fmt::Error)))),
+            };
 
-            let level = task["level"].as_u32()
-                .ok_or_else(|| {
-                    let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-                    Box::new(ReadErr { child_err: Box::new(parse_err) })
-                })?;
+            let level = match task["level"].as_u32() {
+                Some(lvl) => lvl,
+                None => return Err(Box::new(ParseErr::Malformed(Box::new(std::fmt::Error)))),
+            };
 
             tasks.push(Task { id, description, level });
         }
