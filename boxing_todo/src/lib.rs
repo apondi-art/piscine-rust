@@ -2,6 +2,9 @@ mod err;
 
 use std::error::Error;
 use std::fs;
+use json::{JsonValue, object};
+
+pub use err::{ParseErr, ReadErr};
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Task {
@@ -20,54 +23,42 @@ impl TodoList {
     pub fn get_todo(path: &str) -> Result<TodoList, Box<dyn Error>> {
         // Read file
         let content = fs::read_to_string(path)
-            .map_err(|e| Box::new(err::ReadErr { child_err: Box::new(e) }))?;
+            .map_err(|e| Box::new(ReadErr { child_err: Box::new(e) }))?;
 
-        // Simple JSON parsing (very basic implementation)
-        let mut title = None;
+        // Parse JSON
+        let parsed = json::parse(&content)
+            .map_err(|e| Box::new(ParseErr::Malformed(Box::new(e))))?;
+
+        // Get title
+        let title = parsed["title"].as_str()
+            .ok_or_else(|| Box::new(ParseErr::Malformed(Box::new(std::fmt::Error))))?
+            .to_string();
+
+        // Get tasks
+        let tasks_array = parsed["tasks"].as_array()
+            .ok_or_else(|| Box::new(ParseErr::Malformed(Box::new(std::fmt::Error))))?;
+
+        // Check if tasks is empty
+        if tasks_array.is_empty() {
+            return Err(Box::new(ParseErr::Empty));
+        }
+
+        // Parse tasks
         let mut tasks = Vec::new();
-        
-        for line in content.lines() {
-            let line = line.trim();
-            
-            // Parse title
-            if line.starts_with("\"title\"") {
-                if let Some(start) = line.find(':') {
-                    let value = line[start+1..].trim().trim_matches('"').trim().to_string();
-                    title = Some(value);
-                }
-            }
-            
-            // Parse tasks
-            if line.starts_with("\"id\"") {
-                let mut id = 0;
-                let mut description = String::new();
-                let mut level = 0;
-                
-                if let Some(start) = line.find(':') {
-                    if let Some(end) = line.find(',') {
-                        if let Ok(num) = line[start+1..end].trim().parse::<u32>() {
-                            id = num;
-                        }
-                    }
-                }
-                
-                // This is very simplified parsing - would need more robust implementation
-                // for real-world use
-                tasks.push(Task {
-                    id,
-                    description: "placeholder".to_string(), // Simplified
-                    level: 0, // Simplified
-                });
-            }
+        for task in tasks_array {
+            let id = task["id"].as_u32()
+                .ok_or_else(|| Box::new(ParseErr::Malformed(Box::new(std::fmt::Error))))?;
+
+            let description = task["description"].as_str()
+                .ok_or_else(|| Box::new(ParseErr::Malformed(Box::new(std::fmt::Error))))?
+                .to_string();
+
+            let level = task["level"].as_u32()
+                .ok_or_else(|| Box::new(ParseErr::Malformed(Box::new(std::fmt::Error))))?;
+
+            tasks.push(Task { id, description, level });
         }
 
-        if tasks.is_empty() {
-            return Err(Box::new(err::ParseErr::Empty));
-        }
-
-        Ok(TodoList {
-            title: title.unwrap_or_default(),
-            tasks,
-        })
+        Ok(TodoList { title, tasks })
     }
 }
