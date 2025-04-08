@@ -25,17 +25,9 @@ impl TodoList {
         let content = fs::read_to_string(path)
             .map_err(|e| Box::new(ReadErr { child_err: Box::new(e) }) as Box<dyn Error>)?;
 
-        // Parse JSON with nested error structure
-        let parsed = match json::parse(&content) {
-            Ok(p) => p,
-            Err(e) => {
-                // Create inner ParseErr with json::Error
-                let inner_err = ParseErr::Malformed(Box::new(e));
-                // Create outer ParseErr with inner_err as source
-                let outer_err = ParseErr::Malformed(Box::new(inner_err));
-                return Err(Box::new(outer_err));
-            }
-        };
+        // Parse JSON
+        let parsed = json::parse(&content)
+            .map_err(|e| Box::new(ParseErr::Malformed(Box::new(e))) as Box<dyn Error>)?;
 
         // Get title
         let title = parsed["title"].as_str()
