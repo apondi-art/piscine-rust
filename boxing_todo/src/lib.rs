@@ -25,13 +25,16 @@ impl TodoList {
         let content = fs::read_to_string(path)
             .map_err(|e| Box::new(ReadErr { child_err: Box::new(e) }) as Box<dyn Error>)?;
 
-        // Parse JSON - this is where we need to ensure proper error source
-        let parsed = json::parse(&content)
-            .map_err(|e| {
-                let parse_err = ParseErr::Malformed(Box::new(e));
-                // Important: We need to box the ParseErr itself
-                Box::new(parse_err) as Box<dyn Error>
-            })?;
+        // Parse JSON - handle malformed case specially
+        let parsed = match json::parse(&content) {
+            Ok(p) => p,
+            Err(e) => {
+                // Create a nested ParseErr structure
+                let inner_err = ParseErr::Malformed(Box::new(e));
+                let outer_err = ParseErr::Malformed(Box::new(inner_err));
+                return Err(Box::new(outer_err));
+            }
+        };
 
         // Get title
         let title = parsed["title"].as_str()
