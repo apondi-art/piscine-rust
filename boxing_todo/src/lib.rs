@@ -34,7 +34,10 @@ impl std::fmt::Display for ErrorWrapper {
 
 impl Error for ErrorWrapper {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
-        Some(&self.parse_err)
+        match &self.parse_err {
+            ParseErr::Malformed(e) => Some(e.as_ref()),
+            ParseErr::Empty => None, // Explicitly handle Empty
+        }
     }
 }
 
@@ -47,26 +50,28 @@ impl TodoList {
         };
 
         // Parse JSON with proper error structure
-        let parsed = match json::parse(&content) {
-            Ok(p) => p,
-            Err(e) => {
-                let parse_err = ParseErr::Malformed(Box::new(e));
-                return Err(Box::new(ErrorWrapper { parse_err }));
-            }
-        };
+        let parsed_result = json::parse(&content);
+        if let Err(e) = parsed_result {
+            let parse_err = ParseErr::Malformed(Box::new(e));
+            return Err(Box::new(ErrorWrapper { parse_err }));
+        }
+        let parsed = parsed_result.unwrap();
+
+        // Helper function to create and return a Malformed ParseErr wrapped in ErrorWrapper
+        fn malformed_err(inner_error: Box<dyn Error>) -> Box<dyn Error> {
+            Box::new(ErrorWrapper { parse_err: ParseErr::Malformed(inner_error) })
+        }
 
         // Get title
         let title_result = parsed["title"].as_str();
         if title_result.is_none() {
-            let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-            return Err(Box::new(ErrorWrapper { parse_err }));
+            return Err(malformed_err(Box::new(std::fmt::Error)));
         }
         let title = title_result.unwrap().to_string();
 
         // Get tasks array
         if !parsed["tasks"].is_array() {
-            let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-            return Err(Box::new(ErrorWrapper { parse_err }));
+            return Err(malformed_err(Box::new(std::fmt::Error)));
         }
 
         let tasks_value = &parsed["tasks"];
@@ -81,22 +86,19 @@ impl TodoList {
         for task in tasks_value.members() {
             let id_result = task["id"].as_u32();
             if id_result.is_none() {
-                let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-                return Err(Box::new(ErrorWrapper { parse_err }));
+                return Err(malformed_err(Box::new(std::fmt::Error)));
             }
             let id = id_result.unwrap();
 
             let description_result = task["description"].as_str();
             if description_result.is_none() {
-                let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-                return Err(Box::new(ErrorWrapper { parse_err }));
+                return Err(malformed_err(Box::new(std::fmt::Error)));
             }
             let description = description_result.unwrap().to_string();
 
             let level_result = task["level"].as_u32();
             if level_result.is_none() {
-                let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-                return Err(Box::new(ErrorWrapper { parse_err }));
+                return Err(malformed_err(Box::new(std::fmt::Error)));
             }
             let level = level_result.unwrap();
 
