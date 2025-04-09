@@ -63,12 +63,12 @@ impl TodoList {
         // Get title
         let title = match parsed["title"].as_str() {
             Some(t) => t.to_string(),
-            None => return malformed_err(Box::new(std::fmt::Error)),
+            None => return Err(malformed_err(Box::new(std::fmt::Error))),
         };
 
         // Get tasks array
         if !parsed["tasks"].is_array() {
-            return malformed_err(Box::new(std::fmt::Error));
+            return Err(malformed_err(Box::new(std::fmt::Error)));
         }
 
         let tasks_value = &parsed["tasks"];
@@ -83,17 +83,17 @@ impl TodoList {
         for task in tasks_value.members() {
             let id = match task["id"].as_u32() {
                 Some(id) => id,
-                None => return malformed_err(Box::new(std::fmt::Error)),
+                None => return Err(malformed_err(Box::new(std::fmt::Error))),
             };
 
             let description = match task["description"].as_str() {
                 Some(desc) => desc.to_string(),
-                None => return malformed_err(Box::new(std::fmt::Error)),
+                None => return Err(malformed_err(Box::new(std::fmt::Error))),
             };
 
             let level = match task["level"].as_u32() {
                 Some(lvl) => lvl,
-                None => return malformed_err(Box::new(std::fmt::Error)),
+                None => return Err(malformed_err(Box::new(std::fmt::Error))),
             };
 
             tasks.push(Task { id, description, level });
