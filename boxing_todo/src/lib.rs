@@ -2,7 +2,7 @@ mod err;
 
 use std::error::Error;
 use std::fs;
-use json;
+use json::JsonValue;
 
 pub use err::{ParseErr, ReadErr};
 
@@ -34,7 +34,6 @@ impl std::fmt::Display for ErrorWrapper {
 
 impl Error for ErrorWrapper {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
-        // This is the crucial part - return the ParseErr as the source
         Some(&self.parse_err)
     }
 }
@@ -51,32 +50,29 @@ impl TodoList {
         let parsed = match json::parse(&content) {
             Ok(p) => p,
             Err(e) => {
-                // First create the ParseErr holding the JSON error
                 let parse_err = ParseErr::Malformed(Box::new(e));
-                
-                // Then wrap it in our custom ErrorWrapper that will return
-                // the ParseErr as its source()
                 return Err(Box::new(ErrorWrapper { parse_err }));
             }
         };
+
+        // Helper function to create and return a Malformed ParseErr wrapped in ErrorWrapper
+        fn malformed_err(inner_error: Box<dyn Error>) -> Box<dyn Error> {
+            Box::new(ErrorWrapper { parse_err: ParseErr::Malformed(inner_error) })
+        }
 
         // Get title
         let title = match parsed["title"].as_str() {
             Some(t) => t.to_string(),
-            None => {
-                let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-                return Err(Box::new(ErrorWrapper { parse_err }));
-            }
+            None => return malformed_err(Box::new(std::fmt::Error)),
         };
 
         // Get tasks array
         if !parsed["tasks"].is_array() {
-            let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-            return Err(Box::new(ErrorWrapper { parse_err }));
+            return malformed_err(Box::new(std::fmt::Error));
         }
 
         let tasks_value = &parsed["tasks"];
-        
+
         // Check if tasks is empty
         if tasks_value.len() == 0 {
             return Err(Box::new(ParseErr::Empty));
@@ -87,26 +83,17 @@ impl TodoList {
         for task in tasks_value.members() {
             let id = match task["id"].as_u32() {
                 Some(id) => id,
-                None => {
-                    let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-                    return Err(Box::new(ErrorWrapper { parse_err }));
-                }
+                None => return malformed_err(Box::new(std::fmt::Error)),
             };
 
             let description = match task["description"].as_str() {
                 Some(desc) => desc.to_string(),
-                None => {
-                    let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-                    return Err(Box::new(ErrorWrapper { parse_err }));
-                }
+                None => return malformed_err(Box::new(std::fmt::Error)),
             };
 
             let level = match task["level"].as_u32() {
                 Some(lvl) => lvl,
-                None => {
-                    let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
-                    return Err(Box::new(ErrorWrapper { parse_err }));
-                }
+                None => return malformed_err(Box::new(std::fmt::Error)),
             };
 
             tasks.push(Task { id, description, level });
