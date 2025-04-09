@@ -35,8 +35,15 @@ impl std::fmt::Display for ErrorWrapper {
 impl Error for ErrorWrapper {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
         match &self.parse_err {
-            ParseErr::Malformed(e) => Some(e.as_ref()),
-            ParseErr::Empty => None, // Explicitly handle Empty
+            ParseErr::Malformed(e) => {
+                // Only return Some if the underlying error is not std::fmt::Error
+                if e.downcast_ref::<std::fmt::Error>().is_none() {
+                    Some(e.as_ref())
+                } else {
+                    None
+                }
+            }
+            ParseErr::Empty => None,
         }
     }
 }
