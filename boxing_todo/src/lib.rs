@@ -55,20 +55,18 @@ impl TodoList {
             }
         };
 
-        // Helper function to create and return a Malformed ParseErr wrapped in ErrorWrapper
-        fn malformed_err(inner_error: Box<dyn Error>) -> Box<dyn Error> {
-            Box::new(ErrorWrapper { parse_err: ParseErr::Malformed(inner_error) })
-        }
-
         // Get title
-        let title = match parsed["title"].as_str() {
-            Some(t) => t.to_string(),
-            None => return Err(malformed_err(Box::new(std::fmt::Error))),
-        };
+        let title_result = parsed["title"].as_str();
+        if title_result.is_none() {
+            let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
+            return Err(Box::new(ErrorWrapper { parse_err }));
+        }
+        let title = title_result.unwrap().to_string();
 
         // Get tasks array
         if !parsed["tasks"].is_array() {
-            return Err(malformed_err(Box::new(std::fmt::Error)));
+            let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
+            return Err(Box::new(ErrorWrapper { parse_err }));
         }
 
         let tasks_value = &parsed["tasks"];
@@ -81,20 +79,26 @@ impl TodoList {
         // Parse tasks
         let mut tasks = Vec::new();
         for task in tasks_value.members() {
-            let id = match task["id"].as_u32() {
-                Some(id) => id,
-                None => return Err(malformed_err(Box::new(std::fmt::Error))),
-            };
+            let id_result = task["id"].as_u32();
+            if id_result.is_none() {
+                let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
+                return Err(Box::new(ErrorWrapper { parse_err }));
+            }
+            let id = id_result.unwrap();
 
-            let description = match task["description"].as_str() {
-                Some(desc) => desc.to_string(),
-                None => return Err(malformed_err(Box::new(std::fmt::Error))),
-            };
+            let description_result = task["description"].as_str();
+            if description_result.is_none() {
+                let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
+                return Err(Box::new(ErrorWrapper { parse_err }));
+            }
+            let description = description_result.unwrap().to_string();
 
-            let level = match task["level"].as_u32() {
-                Some(lvl) => lvl,
-                None => return Err(malformed_err(Box::new(std::fmt::Error))),
-            };
+            let level_result = task["level"].as_u32();
+            if level_result.is_none() {
+                let parse_err = ParseErr::Malformed(Box::new(std::fmt::Error));
+                return Err(Box::new(ErrorWrapper { parse_err }));
+            }
+            let level = level_result.unwrap();
 
             tasks.push(Task { id, description, level });
         }
