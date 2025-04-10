@@ -233,11 +233,12 @@ pub fn cut_or_raise(mall: &mut Mall) {
                     (exit + 24) - entry
                 };
 
-                if duration > 10 {
-                    employee.salary *= 1.1;
+                // Apply multiplication and round to 4 decimal places
+                employee.salary = if duration > 10 {
+                    (employee.salary * 1.1 * 10000.0).round() / 10000.0
                 } else {
-                    employee.salary *= 0.9;
-                }
+                    (employee.salary * 0.9 * 10000.0).round() / 10000.0
+                };
             }
         }
     }
