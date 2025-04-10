@@ -15,7 +15,7 @@ pub struct Mob {
 
 impl Mob {
     pub fn recruit(&mut self, name: String, age: u8) {
-        self.members.push(Member::new(name, Role::Associate, age));
+        self.members.push(Member::new(&name, Role::Associate, age));
     }
 
     fn power_score(&self) -> u32 {
@@ -26,33 +26,24 @@ impl Mob {
         let self_score = self.power_score();
         let other_score = other.power_score();
 
-        let loser = if self_score > other_score {
-            other
+        let (loser, winner) = if self_score > other_score {
+            (other, self)
         } else if self_score < other_score {
-            self
+            (self, other)
         } else {
-            self
+            (self, other) // Attacker loses in draw
         };
 
         if !loser.members.is_empty() {
             loser.members.pop();
         }
 
-        if self_score == other_score || self.members.is_empty() || other.members.is_empty() {
-            if other.members.is_empty() && !self.members.is_empty() {
-                self.wealth += other.wealth;
-                other.wealth = 0;
-                for city in &other.cities {
-                    self.cities.push(city.clone());
-                }
-                other.cities.clear();
-            } else if self.members.is_empty() && !other.members.is_empty() {
-                other.wealth += self.wealth;
-                self.wealth = 0;
-                for city in &self.cities {
-                    other.cities.push(city.clone());
-                }
-                self.cities.clear();
+        if loser.members.is_empty() {
+            winner.wealth += loser.wealth;
+            loser.wealth = 0;
+
+            for city in loser.cities.drain(..) {
+                winner.cities.push(city);
             }
         }
     }
