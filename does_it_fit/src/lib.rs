@@ -1,7 +1,7 @@
 
-pub mod areas_volume;
-use crate::areas_volume::{GeometricalShapes, GeometricalVolumes};
-use crate::areas_volume::{
+pub mod areas_volumes;
+use crate::areas_volumes::{GeometricalShapes, GeometricalVolumes};
+use crate::areas_volumes::{
     square_area, triangle_area, circle_area, rectangle_area,
     cube_volume, sphere_volume, triangular_pyramid_volume,
     parallelepiped_volume, cone_volume
@@ -10,7 +10,7 @@ use crate::areas_volume::{
 pub fn area_fit(
     x: usize,
     y: usize,
-    objects: GeometricalShapes,  // No need for module prefix
+    objects: GeometricalShapes,  
     times: usize,
     a: usize,
     b: usize,

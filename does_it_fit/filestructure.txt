@@ -1,5 +1,5 @@
 |-- Cargo.lock
 |-- Cargo.toml
 |-- src
-    |-- areas_volume.rs
+    |-- areas_volumes.rs
     |-- lib.rs
