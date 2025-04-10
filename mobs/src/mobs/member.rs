@@ -7,12 +7,21 @@ pub enum Role {
 }
 
 impl Role {
-    pub fn combat_score(&self) -> u32 {
+    pub fn score(&self) -> u32 {
         match self {
             Role::Underboss => 4,
             Role::Caporegime => 3,
             Role::Soldier => 2,
             Role::Associate => 1,
+        }
+    }
+
+    pub fn promote(&self) -> Role {
+        match self {
+            Role::Associate => Role::Soldier,
+            Role::Soldier => Role::Caporegime,
+            Role::Caporegime => Role::Underboss,
+            Role::Underboss => Role::Underboss,
         }
     }
 }
@@ -34,11 +43,6 @@ impl Member {
     }
 
     pub fn get_promotion(&mut self) {
-        self.role = match self.role {
-            Role::Associate => Role::Soldier,
-            Role::Soldier => Role::Caporegime,
-            Role::Caporegime => Role::Underboss,
-            r => r,
-        };
+        self.role = self.role.promote();
     }
 }
