@@ -1,8 +1,19 @@
 pub fn expected_variable(compared: &str, expected: &str) -> Option<String> {
     // Enhanced case validation
-    let is_snake = compared.contains('_');
-    let is_camel = !is_snake && compared.chars().any(|c| c.is_uppercase());
-    if !is_camel && !is_snake {
+    let compared_is_snake = compared.contains('_');
+    let compared_is_camel = !compared_is_snake && compared.chars().any(|c| c.is_uppercase());
+    
+    // Return None if compared doesn't follow a naming convention
+    if !compared_is_camel && !compared_is_snake {
+        return None;
+    }
+    
+    // Check expected string's naming convention
+    let expected_is_snake = expected.contains('_');
+    let expected_is_camel = !expected_is_snake && expected.chars().any(|c| c.is_uppercase());
+    
+    // If they don't use the same naming convention, return None
+    if (compared_is_snake && !expected_is_snake) || (compared_is_camel && !expected_is_camel) {
         return None;
     }
     
@@ -11,6 +22,7 @@ pub fn expected_variable(compared: &str, expected: &str) -> Option<String> {
     let expected_lower = expected.to_lowercase();
     let distance = edit_distance(&compared_lower, &expected_lower);
     let expected_len = expected_lower.len();
+    
     if expected_len == 0 {
         return None;
     }
