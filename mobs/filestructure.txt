@@ -1,0 +1,8 @@
+|-- Cargo.lock
+|-- Cargo.toml
+|-- src
+    |-- lib.rs
+    |-- mobs
+        |-- boss.rs
+        |-- member.rs
+        |-- mobs.rs
