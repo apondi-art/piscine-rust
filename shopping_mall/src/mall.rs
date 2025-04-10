@@ -204,7 +204,7 @@ pub fn highest_paid_employee(mall: Mall) -> Vec<Employee> {
         .collect()
 }
 
-pub fn nbr_of_employees(mall: &Mall) -> usize {
+pub fn nbr_of_employees(mall: Mall) -> usize {
     let employees_count: usize = mall.floors
         .iter()
         .flat_map(|floor| floor.stores.iter())
