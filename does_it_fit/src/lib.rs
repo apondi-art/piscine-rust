@@ -1,7 +1,7 @@
 
 pub mod areas_volume;
-use areas_volume::{GeometricalShapes, GeometricalVolumes};
-use areas_volume::{
+use crate::areas_volume::{GeometricalShapes, GeometricalVolumes};
+use crate::areas_volume::{
     square_area, triangle_area, circle_area, rectangle_area,
     cube_volume, sphere_volume, triangular_pyramid_volume,
     parallelepiped_volume, cone_volume
