@@ -242,3 +242,11 @@ pub fn cut_or_raise(mall: &mut Mall) {
         }
     }
 }
+
+
+
+
+pub use guard::Guard;
+pub use floor::Floor;
+pub use floor::store::Store;
+pub use floor::store::employee::Employee;
