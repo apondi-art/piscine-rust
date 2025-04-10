@@ -10,8 +10,8 @@ impl Mall {
     pub fn new(name: &str, guards: Vec<guard::Guard>, floors: Vec<floor::Floor>) -> Mall {
         Mall {
             name: name.to_string(),
-            guards: guards,
-            floors: floors,
+            guards,
+            floors,
         }
     }
 
@@ -32,7 +32,6 @@ impl Mall {
 }
 
 pub mod guard {
-
     #[derive(Debug, Clone, PartialEq)]
     pub struct Guard {
         pub name: String,
@@ -45,92 +44,16 @@ pub mod guard {
         pub fn new(name: &str, age: u8, years_experience: u8) -> Guard {
             Guard {
                 name: name.to_string(),
-                age: age,
-                years_experience: years_experience,
+                age,
+                years_experience,
             }
         }
     }
 }
 
 pub mod floor {
-
-    #[derive(Debug, Clone, PartialEq)]
-    pub struct Floor {
-        pub name: String,
-        pub stores: Vec<store::Store>,
-        pub size_limit: u64,
-    }
-
-    impl Floor {
-        #[allow(dead_code)]
-        pub fn new(name: &str, stores: Vec<store::Store>, store_limit: u64) -> Floor {
-            Floor {
-                name: name.to_string(),
-                stores: stores,
-                size_limit: store_limit,
-            }
-        }
-
-        #[allow(dead_code)]
-        pub fn change_store(&mut self, store: &str, new_store: store::Store) {
-            let pos = self.stores.iter().position(|x| x.name == store).unwrap();
-            self.stores[pos] = new_store;
-        }
-
-        #[allow(dead_code)]
-        pub fn add_store(&mut self, new_store: store::Store) {
-            let mut current_floor_size = 0;
-
-            for store in self.stores.iter() {
-                current_floor_size += store.square_meters;
-            }
-
-            if self.size_limit < current_floor_size + new_store.square_meters {
-                self.stores.push(new_store);
-            }
-        }
-
-        #[allow(dead_code)]
-        pub fn remove_store(&mut self, store_name: String) {
-            self.stores.retain(|x| x.name != store_name);
-        }
-    }
-
     pub mod store {
-
-        #[derive(Debug, Clone, PartialEq)]
-        pub struct Store {
-            pub name: String,
-            pub square_meters: u64,
-            pub employees: Vec<employee::Employee>,
-        }
-
-        impl Store {
-            #[allow(dead_code)]
-            pub fn new(name: &str, space: u64, employees: Vec<employee::Employee>) -> Store {
-                Store {
-                    name: name.to_string(),
-                    square_meters: space,
-                    employees: employees,
-                }
-            }
-
-            #[allow(dead_code)]
-            pub fn hire_employee(&mut self, employee: employee::Employee) {
-                self.employees.push(employee);
-            }
-            #[allow(dead_code)]
-            pub fn fire_employee(&mut self, employee_name: &str) {
-                self.employees.retain(|x| x.name != employee_name);
-            }
-            #[allow(dead_code)]
-            pub fn expand(&mut self, square_meters: u64) {
-                self.square_meters += square_meters;
-            }
-        }
-
         pub mod employee {
-
             #[derive(Debug, Clone, PartialEq)]
             pub struct Employee {
                 pub name: String,
@@ -150,9 +73,9 @@ pub mod floor {
                 ) -> Employee {
                     Employee {
                         name: name.to_string(),
-                        age: age,
+                        age,
                         working_hours: (entry_hour, exit_hour),
-                        salary: salary,
+                        salary,
                     }
                 }
 
@@ -173,14 +96,92 @@ pub mod floor {
 
                 #[allow(dead_code)]
                 pub fn cut(&mut self, amount: f64) {
-                    self.salary = self.salary - amount;
+                    self.salary -= amount;
                 }
             }
+        }
+
+        #[derive(Debug, Clone, PartialEq)]
+        pub struct Store {
+            pub name: String,
+            pub square_meters: u64,
+            pub employees: Vec<employee::Employee>,
+        }
+
+        impl Store {
+            #[allow(dead_code)]
+            pub fn new(name: &str, space: u64, employees: Vec<employee::Employee>) -> Store {
+                Store {
+                    name: name.to_string(),
+                    square_meters: space,
+                    employees,
+                }
+            }
+
+            #[allow(dead_code)]
+            pub fn hire_employee(&mut self, employee: employee::Employee) {
+                self.employees.push(employee);
+            }
+
+            #[allow(dead_code)]
+            pub fn fire_employee(&mut self, employee_name: &str) {
+                self.employees.retain(|x| x.name != employee_name);
+            }
+
+            #[allow(dead_code)]
+            pub fn expand(&mut self, square_meters: u64) {
+                self.square_meters += square_meters;
+            }
+        }
+    }
+
+    #[derive(Debug, Clone, PartialEq)]
+    pub struct Floor {
+        pub name: String,
+        pub stores: Vec<store::Store>,
+        pub size_limit: u64,
+    }
+
+    impl Floor {
+        #[allow(dead_code)]
+        pub fn new(name: &str, stores: Vec<store::Store>, store_limit: u64) -> Floor {
+            Floor {
+                name: name.to_string(),
+                stores,
+                size_limit: store_limit,
+            }
+        }
+
+        #[allow(dead_code)]
+        pub fn change_store(&mut self, store: &str, new_store: store::Store) {
+            if let Some(pos) = self.stores.iter().position(|x| x.name == store) {
+                self.stores[pos] = new_store;
+            }
+        }
+
+        #[allow(dead_code)]
+        pub fn add_store(&mut self, new_store: store::Store) {
+            let current_size: u64 = self.stores.iter().map(|s| s.square_meters).sum();
+            if current_size + new_store.square_meters <= self.size_limit {
+                self.stores.push(new_store);
+            }
+        }
+
+        #[allow(dead_code)]
+        pub fn remove_store(&mut self, store_name: String) {
+            self.stores.retain(|x| x.name != store_name);
         }
     }
 }
 
-pub fn biggest_store(mall: Mall) -> floor::store::Store {
+// Public API exports
+pub use guard::Guard;
+pub use floor::Floor;
+pub use floor::store::Store;
+pub use floor::store::employee::Employee;
+
+// Management functions
+pub fn biggest_store(mall: Mall) -> Store {
     mall.floors
         .into_iter()
         .flat_map(|floor| floor.stores)
@@ -188,16 +189,16 @@ pub fn biggest_store(mall: Mall) -> floor::store::Store {
         .expect("Mall has no stores")
 }
 
-pub fn highest_paid_employee(mall: Mall) -> Vec<floor::store::employee::Employee> {
+pub fn highest_paid_employee(mall: Mall) -> Vec<Employee> {
     let all_employees: Vec<_> = mall.floors
         .into_iter()
         .flat_map(|floor| floor.stores.into_iter().flat_map(|store| store.employees))
         .collect();
-    
+
     let max_salary = all_employees.iter()
         .map(|e| e.salary)
-        .fold(f64::NEG_INFINITY, |a, b| a.max(b));
-    
+        .fold(f64::NEG_INFINITY, f64::max);
+
     all_employees.into_iter()
         .filter(|e| (e.salary - max_salary).abs() < f64::EPSILON)
         .collect()
@@ -212,14 +213,13 @@ pub fn nbr_of_employees(mall: &Mall) -> usize {
     employees_count + mall.guards.len()
 }
 
-pub fn check_for_securities(mall: &mut Mall, guards: Vec<guard::Guard>) {
-    let total_floor_size: u64 = mall.floors.iter().map(|floor| floor.size_limit).sum();
-    let required_guards = (total_floor_size + 199) / 200;
+pub fn check_for_securities(mall: &mut Mall, guards: Vec<Guard>) {
+    let total_size: u64 = mall.floors.iter().map(|f| f.size_limit).sum();
+    let required_guards = (total_size + 199) / 200;
     let current_guards = mall.guards.len() as u64;
     let needed = required_guards.saturating_sub(current_guards) as usize;
-    
-    let guards_to_add: Vec<_> = guards.into_iter().take(needed).collect();
-    mall.guards.extend(guards_to_add);
+
+    mall.guards.extend(guards.into_iter().take(needed));
 }
 
 pub fn cut_or_raise(mall: &mut Mall) {
@@ -232,7 +232,7 @@ pub fn cut_or_raise(mall: &mut Mall) {
                 } else {
                     (exit + 24) - entry
                 };
-                
+
                 if duration > 10 {
                     employee.salary *= 1.1;
                 } else {
@@ -242,11 +242,3 @@ pub fn cut_or_raise(mall: &mut Mall) {
         }
     }
 }
-
-
-
-
-pub use guard::Guard;
-pub use floor::Floor;
-pub use floor::store::Store;
-pub use floor::store::employee::Employee;
