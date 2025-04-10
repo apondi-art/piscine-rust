@@ -1,19 +1,22 @@
 use case::CaseExt;
 
 pub fn expected_variable(compared: &str, expected: &str) -> Option<String> {
-    // Validate camel/snake case with proper format checks
-    let compared_lower = compared.to_lowercase();
-    let is_camel = compared.to_camel().to_lowercase() == compared_lower 
+    // Validate snake_case first (contains underscores)
+    let is_snake = compared.contains('_');
+    
+    // Validate camelCase: no underscores + contains both lowercase and uppercase
+    let is_camel = !is_snake 
+        && compared.chars().any(|c| c.is_lowercase())
         && compared.chars().any(|c| c.is_uppercase());
-    let is_snake = compared.to_snake().to_lowercase() == compared_lower 
-        && compared.contains('_');
     
     if !is_camel && !is_snake {
         return None;
     }
 
     // Case-insensitive comparison
+    let compared_lower = compared.to_lowercase();
     let expected_lower = expected.to_lowercase();
+
     let distance = edit_distance(&compared_lower, &expected_lower);
     
     let expected_len = expected_lower.len();
