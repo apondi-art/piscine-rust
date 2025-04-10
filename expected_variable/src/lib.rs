@@ -1,18 +1,19 @@
 use case::CaseExt;
 
 pub fn expected_variable(compared: &str, expected: &str) -> Option<String> {
-    // Validate camel/snake case using case crate (case-insensitive check)
-    let is_camel = compared.to_camel().to_lowercase() == compared.to_lowercase();
-    let is_snake = compared.to_snake().to_lowercase() == compared.to_lowercase();
+    // Validate camel/snake case with proper format checks
+    let compared_lower = compared.to_lowercase();
+    let is_camel = compared.to_camel().to_lowercase() == compared_lower 
+        && compared.chars().any(|c| c.is_uppercase());
+    let is_snake = compared.to_snake().to_lowercase() == compared_lower 
+        && compared.contains('_');
     
     if !is_camel && !is_snake {
         return None;
     }
 
     // Case-insensitive comparison
-    let compared_lower = compared.to_lowercase();
     let expected_lower = expected.to_lowercase();
-
     let distance = edit_distance(&compared_lower, &expected_lower);
     
     let expected_len = expected_lower.len();
@@ -21,7 +22,7 @@ pub fn expected_variable(compared: &str, expected: &str) -> Option<String> {
     }
 
     let similarity = ((expected_len as f64 - distance as f64) / expected_len as f64) * 100.0;
-    let similarity_rounded = similarity.round() as i32;
+    let similarity_rounded = similarity.round() as u32;
 
     (similarity_rounded > 50).then(|| format!("{}%", similarity_rounded))
 }
@@ -29,8 +30,7 @@ pub fn expected_variable(compared: &str, expected: &str) -> Option<String> {
 fn edit_distance(a: &str, b: &str) -> usize {
     let a_chars: Vec<char> = a.chars().collect();
     let b_chars: Vec<char> = b.chars().collect();
-    let a_len = a_chars.len();
-    let b_len = b_chars.len();
+    let (a_len, b_len) = (a_chars.len(), b_chars.len());
 
     let mut dp = vec![vec![0; b_len + 1]; a_len + 1];
     
