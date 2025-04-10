@@ -1,5 +1,5 @@
 use chrono::{Datelike, NaiveDate};
-use chrono::{Weekday as wd};
+use chrono::Weekday as wd ;
 
 pub fn middle_day(year: i32) -> Option<wd> {
     let is_leap_year = NaiveDate::from_ymd_opt(year, 2, 29).is_some();
