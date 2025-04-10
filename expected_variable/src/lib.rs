@@ -1,13 +1,7 @@
-use case::CaseExt;
-
 pub fn expected_variable(compared: &str, expected: &str) -> Option<String> {
-    // Validate snake_case first (contains underscores)
-    let is_snake = compared.contains('_');
-    
-    // Validate camelCase: no underscores + contains both lowercase and uppercase
-    let is_camel = !is_snake 
-        && compared.chars().any(|c| c.is_lowercase())
-        && compared.chars().any(|c| c.is_uppercase());
+    // Validate variable name format
+    let is_camel = is_camel_case(compared);
+    let is_snake = is_snake_case(compared);
     
     if !is_camel && !is_snake {
         return None;
@@ -28,6 +22,38 @@ pub fn expected_variable(compared: &str, expected: &str) -> Option<String> {
     let similarity_rounded = similarity.round() as u32;
 
     (similarity_rounded > 50).then(|| format!("{}%", similarity_rounded))
+}
+
+fn is_camel_case(s: &str) -> bool {
+    if s.is_empty() || s.contains('_') {
+        return false;
+    }
+    
+    let mut has_upper = false;
+    let mut has_lower = false;
+    
+    for c in s.chars() {
+        if c.is_uppercase() {
+            has_upper = true;
+        } else if c.is_lowercase() {
+            has_lower = true;
+        }
+    }
+    
+    has_upper && has_lower && s.chars().next().unwrap().is_lowercase()
+}
+
+fn is_snake_case(s: &str) -> bool {
+    if s.is_empty() || !s.contains('_') {
+        return false;
+    }
+    
+    let parts: Vec<&str> = s.split('_').collect();
+    if parts.iter().any(|&p| p.is_empty()) {
+        return false;  // No empty parts between underscores
+    }
+    
+    parts.iter().all(|&p| p.chars().all(|c| c.is_lowercase()))
 }
 
 fn edit_distance(a: &str, b: &str) -> usize {
