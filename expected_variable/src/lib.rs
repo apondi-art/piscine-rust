@@ -29,13 +29,13 @@ pub fn expected_variable(compared: &str, expected: &str) -> Option<String> {
     (similarity_rounded > 50).then(|| format!("{}%", similarity_rounded))
 }
 
-// Helper function to check if a string is in camelCase
+// Helper function to check if a string is in camelCase or PascalCase
 fn is_camel_case(s: &str) -> bool {
     if s.is_empty() || s.contains('_') {
         return false;
     }
     
-    // Must contain at least one uppercase letter (to distinguish from lowercase)
+    // Must contain at least one uppercase letter
     // and all characters must be alphanumeric
     s.chars().any(|c| c.is_uppercase()) && 
     s.chars().all(|c| c.is_alphanumeric())
@@ -52,8 +52,8 @@ fn is_snake_case(s: &str) -> bool {
         return false;
     }
     
-    // All characters must be lowercase or underscore
-    s.chars().all(|c| c.is_lowercase() || c == '_')
+    // All characters must be lowercase, digits, or underscore
+    s.chars().all(|c| c.is_lowercase() || c.is_digit(10) || c == '_')
 }
 
 // Edit distance function (Levenshtein distance)
