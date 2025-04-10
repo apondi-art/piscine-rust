@@ -1,3 +1,4 @@
 |-- Cargo.lock
 |-- Cargo.toml
 |-- src
+    |-- lib.rs
