@@ -5,4 +5,4 @@
     |-- mobs
         |-- boss.rs
         |-- member.rs
-        |-- mobs.rs
+        |-- mods.rs
