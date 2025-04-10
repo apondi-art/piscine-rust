@@ -1,9 +1,9 @@
 use case::CaseExt;
 
 pub fn expected_variable(compared: &str, expected: &str) -> Option<String> {
-    // Validate camel/snake case using case crate
-    let is_camel = compared.to_camel() == compared;
-    let is_snake = compared.to_snake() == compared;
+    // Validate camel/snake case using case crate (case-insensitive check)
+    let is_camel = compared.to_camel().to_lowercase() == compared.to_lowercase();
+    let is_snake = compared.to_snake().to_lowercase() == compared.to_lowercase();
     
     if !is_camel && !is_snake {
         return None;
@@ -20,17 +20,16 @@ pub fn expected_variable(compared: &str, expected: &str) -> Option<String> {
         return None;
     }
 
-    let similarity = ((expected_len - distance) as f64 / expected_len as f64) * 100.0;
+    // Safe calculation using floating-point
+    let similarity = ((expected_len as f64 - distance as f64) / expected_len as f64) * 100.0;
     
-    (similarity > 50.0).then(|| format!("{:.0}%", similarity))
+    (similarity > 50.0).then(|| format!("{:.0}%", similarity.round()))
 }
 
-// Add this edit distance implementation
 fn edit_distance(a: &str, b: &str) -> usize {
     let a_chars: Vec<char> = a.chars().collect();
     let b_chars: Vec<char> = b.chars().collect();
-    let a_len = a_chars.len();
-    let b_len = b_chars.len();
+    let (a_len, b_len) = (a_chars.len(), b_chars.len());
 
     let mut dp = vec![vec![0; b_len + 1]; a_len + 1];
     
