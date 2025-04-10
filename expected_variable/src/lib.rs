@@ -20,16 +20,17 @@ pub fn expected_variable(compared: &str, expected: &str) -> Option<String> {
         return None;
     }
 
-    // Safe calculation using floating-point
     let similarity = ((expected_len as f64 - distance as f64) / expected_len as f64) * 100.0;
-    
-    (similarity > 50.0).then(|| format!("{:.0}%", similarity.round()))
+    let similarity_rounded = similarity.round() as i32;
+
+    (similarity_rounded > 50).then(|| format!("{}%", similarity_rounded))
 }
 
 fn edit_distance(a: &str, b: &str) -> usize {
     let a_chars: Vec<char> = a.chars().collect();
     let b_chars: Vec<char> = b.chars().collect();
-    let (a_len, b_len) = (a_chars.len(), b_chars.len());
+    let a_len = a_chars.len();
+    let b_len = b_chars.len();
 
     let mut dp = vec![vec![0; b_len + 1]; a_len + 1];
     
