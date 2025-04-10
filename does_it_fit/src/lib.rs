@@ -15,6 +15,9 @@ pub fn area_fit(
     a: usize,
     b: usize,
 ) -> bool {
+    if times == 0 {
+        return true;
+    }
     let fits = match objects {
         GeometricalShapes::Square => a <= x && a <= y,
         GeometricalShapes::Circle => 2 * a <= x && 2 * a <= y,
@@ -44,6 +47,9 @@ pub fn volume_fit(
     b: usize,
     c: usize,
 ) -> bool {
+    if times == 0 {
+        return true;
+    }
     let box_volume = x as f64 * y as f64 * z as f64;
     let total_volume = match objects {
         GeometricalVolumes::Cube => cube_volume(a) as f64 * times as f64,
