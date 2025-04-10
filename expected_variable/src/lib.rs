@@ -1,9 +1,7 @@
-use case::{Case, CaseExt}; // Import the case crate
-
 pub fn expected_variable(compared: &str, expected: &str) -> Option<String> {
-    // Check if compared string is in camelCase or snake_case using the case crate
-    let is_camel = compared.is_camel();
-    let is_snake = compared.is_snake();
+    // Check if compared string is in camelCase or snake_case using our helper functions
+    let is_camel = is_camel_case(compared);
+    let is_snake = is_snake_case(compared);
     
     // If the compared string is not in camel case or snake case, return None
     if !is_camel && !is_snake {
@@ -31,7 +29,34 @@ pub fn expected_variable(compared: &str, expected: &str) -> Option<String> {
     (similarity_rounded > 50).then(|| format!("{}%", similarity_rounded))
 }
 
-// The edit_distance function definition should already be in your lib.rs
+// Helper function to check if a string is in camelCase
+fn is_camel_case(s: &str) -> bool {
+    if s.is_empty() || s.contains('_') {
+        return false;
+    }
+    
+    // Must contain at least one uppercase letter (to distinguish from lowercase)
+    // and all characters must be alphanumeric
+    s.chars().any(|c| c.is_uppercase()) && 
+    s.chars().all(|c| c.is_alphanumeric())
+}
+
+// Helper function to check if a string is in snake_case
+fn is_snake_case(s: &str) -> bool {
+    if s.is_empty() {
+        return false;
+    }
+    
+    // Must contain at least one underscore
+    if !s.contains('_') {
+        return false;
+    }
+    
+    // All characters must be lowercase or underscore
+    s.chars().all(|c| c.is_lowercase() || c == '_')
+}
+
+// Edit distance function (Levenshtein distance)
 fn edit_distance(a: &str, b: &str) -> usize {
     let a_chars: Vec<char> = a.chars().collect();
     let b_chars: Vec<char> = b.chars().collect();
