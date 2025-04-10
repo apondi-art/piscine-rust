@@ -1,17 +1,15 @@
 pub mod boss;
 pub mod member;
 
-use boss::Boss;
-use member::{Member, Role};
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct Mob {
     pub name: String,
-    pub boss: Boss,
-    pub members: Vec<Member>,
+    pub boss: boss::Boss,
+    pub members: Vec<member::Member>,
     pub cities: Vec<(String, u8)>,
     pub wealth: u32,
 }
+
 
 impl Mob {
     pub fn recruit(&mut self, name: String, age: u8) {
