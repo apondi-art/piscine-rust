@@ -18,6 +18,6 @@ pub fn scytale_cipher(message: String, i: u32) -> String {
         }
     }
     
-    result.truncate(len);
+    // result.truncate(len);
     result
 }
