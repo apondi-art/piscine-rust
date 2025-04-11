@@ -15,9 +15,8 @@ pub fn scytale_cipher(message: String, i: u32) -> String {
             let index = row * i + col;
             if index < len {
                 result.push(chars[index]);
-            } else if row == rows - 1 {
-                // Only add space if it's the last row of an incomplete column
-                result.push(' ');
+            } else if result.len() < len {
+                result.push(' '); // Add space for missing characters
             }
         }
     }
