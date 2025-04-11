@@ -1,4 +1,4 @@
-fn scytale_cipher(message: String, i: u32) -> String {
+pub fn scytale_cipher(message: String, i: u32) -> String {
     let i = i as usize;
     if i <= 1 {
         return message;
