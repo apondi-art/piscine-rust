@@ -4,25 +4,20 @@ pub fn scytale_cipher(message: String, i: u32) -> String {
         return message;
     }
     
-    let chars: Vec<char> = message.chars().collect();
+    let mut chars: Vec<char> = message.chars().collect();
     let len = chars.len();
     let rows = (len + i - 1) / i; // Ceiling division
+    let total = rows * i;
+    chars.resize(total, ' ');
     
-    let mut result = String::with_capacity(len);
+    let mut result = String::with_capacity(total);
     
     for col in 0..i {
         for row in 0..rows {
-            let index = row * i + col;
-            if index < len {
-                result.push(chars[index]);
-            } else if col < (len % i) && len % i != 0 {
-                // Add space only if the column is in the first (len % i) columns
-                result.push(' ');
-            }
+            result.push(chars[row * i + col]);
         }
     }
     
-    // Truncate to the original message length to remove any extra spaces
     result.truncate(len);
     result
 }
