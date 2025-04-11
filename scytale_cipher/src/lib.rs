@@ -3,11 +3,9 @@ pub fn scytale_cipher(message: String, i: u32) -> String {
     if i <= 1 {
         return message;
     }
-    
     let chars: Vec<char> = message.chars().collect();
     let len = chars.len();
     let rows = (len + i - 1) / i; // Ceiling division
-    
     let mut result = String::with_capacity(len);
     
     for col in 0..i {
@@ -15,9 +13,8 @@ pub fn scytale_cipher(message: String, i: u32) -> String {
             let index = row * i + col;
             if index < len {
                 result.push(chars[index]);
-            } else if result.len() < len {
-                result.push(' '); // Add space for missing characters
             }
+            // Remove the else branch that was adding extra spaces
         }
     }
     
