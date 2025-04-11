@@ -18,6 +18,16 @@ pub fn scytale_cipher(message: String, i: u32) -> String {
         }
     }
     
-    // result.truncate(len);
-    result
+    // Trim only the padding spaces we added, not original characters
+    let mut trimmed = String::with_capacity(len);
+    let mut count = 0;
+    for c in result.chars() {
+        if count < len {
+            trimmed.push(c);
+            count += 1;
+        } else {
+            break;
+        }
+    }
+    trimmed
 }
