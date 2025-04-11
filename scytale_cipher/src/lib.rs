@@ -1,0 +1,25 @@
+fn scytale_cipher(message: String, i: u32) -> String {
+    let i = i as usize;
+    if i <= 1 {
+        return message;
+    }
+    
+    let chars: Vec<char> = message.chars().collect();
+    let len = chars.len();
+    
+    // Calculate number of rows needed (ceiling division)
+    let rows = (len + i - 1) / i;
+    
+    let mut result = String::with_capacity(len);
+    
+    for col in 0..i {
+        for row in 0..rows {
+            let index = row * i + col;
+            if index < len {
+                result.push(chars[index]);
+            }
+        }
+    }
+    
+    result
+}
