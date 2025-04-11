@@ -2,7 +2,7 @@ pub fn pig_latin(text: &str) -> String {
 
     text.split_whitespace()
     .map(|word|{
-        let mut chars :Vec<char> = words.chars().collect();
+        let mut chars :Vec<char> = word.chars().collect();
         //check for consonant the followed by qu
         if chars.len() > 3{
             let first = chars[0];
@@ -19,11 +19,11 @@ pub fn pig_latin(text: &str) -> String {
         //checks with vowel
         if !chars.is_empty() && is_vowel(chars[0]){
             chars.extend(vec!['a', 'y']);
-            return chars.into_inter().collect()
+            return chars.into_iter().collect()
         }
         //handle consonantcases
         if let Some(pos) = find_first_vowel(&chars){
-            let moved : Vec<_> = chars.drain(0..pos);
+            let moved : Vec<_> = chars.drain(0..pos).collect();
             chars.extend(moved);
             chars.extend(vec!['a','y']);
 
