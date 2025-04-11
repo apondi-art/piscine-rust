@@ -4,20 +4,20 @@ pub fn scytale_cipher(message: String, i: u32) -> String {
         return message;
     }
     
-    let chars: Vec<char> = message.chars().collect();
+    let mut chars: Vec<char> = message.chars().collect();
     let len = chars.len();
     
-    // Calculate number of rows needed (ceiling division)
-    let rows = (len + i - 1) / i;
+    // Pad with spaces if needed to make full grid
+    let padding = (i - (len % i)) % i;
+    chars.extend(std::iter::repeat(' ').take(padding));
     
-    let mut result = String::with_capacity(len);
+    let rows = chars.len() / i;
+    let mut result = String::with_capacity(chars.len());
     
     for col in 0..i {
         for row in 0..rows {
             let index = row * i + col;
-            if index < len {
-                result.push(chars[index]);
-            }
+            result.push(chars[index]);
         }
     }
     
