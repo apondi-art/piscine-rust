@@ -10,17 +10,13 @@ pub fn scytale_cipher(message: String, i: u32) -> String {
     
     let mut result = String::with_capacity(len);
     
-    // Track how many characters we've written
-    let mut written = 0;
-    
     for col in 0..i {
         for row in 0..rows {
             let index = row * i + col;
             if index < len {
                 result.push(chars[index]);
-                written += 1;
-            } else if written < len {
-                // Only add space if we haven't written all original characters yet
+            } else if row == rows - 1 && col < len % i && len % i != 0 {
+                // Only add space at end of incomplete columns
                 result.push(' ');
             }
         }
