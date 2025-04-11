@@ -6,33 +6,21 @@ pub fn scytale_cipher(message: String, i: u32) -> String {
     
     let chars: Vec<char> = message.chars().collect();
     let len = chars.len();
-    let rows = (len + i - 1) / i; // Ceiling division
     
-    // Create a 2D grid and fill it with the characters
-    let mut grid = vec![vec![' '; i]; rows];
-    let mut char_index = 0;
+    // Calculate number of rows needed
+    let rows = (len + i - 1) / i;
     
-    for row in 0..rows {
-        for col in 0..i {
-            if char_index < len {
-                grid[row][col] = chars[char_index];
-                char_index += 1;
-            }
-        }
-    }
+    let mut result = String::new();
     
-    // Read the grid column by column
-    let mut result = String::with_capacity(len);
+    // Read column by column
     for col in 0..i {
         for row in 0..rows {
-            if col < i && row < rows {
-                result.push(grid[row][col]);
+            let index = row * i + col;
+            if index < len {
+                result.push(chars[index]);
             }
         }
     }
-    
-    // Trim any extra spaces at the end to match exactly the length of the input
-    result.truncate(len);
     
     result
 }
