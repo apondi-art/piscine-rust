@@ -3,20 +3,21 @@ pub fn scytale_cipher(message: String, i: u32) -> String {
     if i <= 1 {
         return message;
     }
-    let chars: Vec<char> = message.chars().collect();
+    
+    let mut chars: Vec<char> = message.chars().collect();
     let len = chars.len();
     let rows = (len + i - 1) / i; // Ceiling division
-    let mut result = String::with_capacity(len);
+    let total = rows * i;
+    chars.resize(total, ' ');
+    
+    let mut result = String::with_capacity(total);
     
     for col in 0..i {
         for row in 0..rows {
-            let index = row * i + col;
-            if index < len {
-                result.push(chars[index]);
-            }
-          
+            result.push(chars[row * i + col]);
         }
     }
     
+    result.truncate(len);
     result
 }
