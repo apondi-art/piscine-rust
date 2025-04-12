@@ -1,7 +1,7 @@
 
 pub fn spell(n: u64) -> String {
     if n == 0{
-        return n.to_string();
+        return "zero".to_string();
     }
 
     convert(n)
