@@ -21,7 +21,7 @@ impl GameSession {
     }
     pub fn read_winner(&self) -> (String, u16) {
         let p1_score = self.p1.1;
-        let p2_score = self.p2.1
+        let p2_score = self.p2.1;
         if p1_score > p2_score{
             (self.p1.0.clone(), p1_score)
 
