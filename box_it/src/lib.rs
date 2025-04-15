@@ -1,16 +1,16 @@
 pub fn transform_and_save_on_heap(s: String) -> Box<Vec<u32>> {
     let nums: Vec<u32> = s.split_whitespace()
-        .map(|c| {
+        .filter_map(|c| {
             if c.ends_with('k') {
                 c.trim_end_matches('k')
                     .parse::<u32>()
+                    .ok()
                     
                     .map(|n| n * 1000)
             } else {
-                c.parse::<u32>()
+                c.parse::<u32>().ok()
             }
         })
-        .filter_map(Result::ok)
         .collect();
     Box::new(nums)
 }
