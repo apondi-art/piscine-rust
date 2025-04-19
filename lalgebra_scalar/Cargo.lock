@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "lalgebra_scalar"
+name = "lalgebra_vector"
 version = "0.1.0"
