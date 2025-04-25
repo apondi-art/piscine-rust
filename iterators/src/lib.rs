@@ -7,26 +7,23 @@ impl Iterator for Collatz {
     type Item = Collatz;
     
     fn next(&mut self) -> Option<Self::Item> {
-        // If we've reached 1, we stop
+        // Return the current value as a Collatz struct
+        let current = Collatz { v: self.v };
+        
+        // If we're at 1, this is the last item we'll return
         if self.v == 1 {
-            return None;
+            self.v = 0; // Set to 0 so next call will return None
+            return Some(current);
         }
         
-        // Calculate the next value in the sequence
-        let next_value = if self.v % 2 == 0 {
+        // Calculate and update to the next value in the sequence
+        self.v = if self.v % 2 == 0 {
             self.v / 2
         } else {
             self.v * 3 + 1
         };
         
-        // Store the current value to return
-        let current = self.v;
-        
-        // Update the internal state for the next iteration
-        self.v = next_value;
-        
-        // Return the current value as a Collatz struct
-        Some(Collatz { v: current })
+        Some(current)
     }
 }
 
@@ -37,9 +34,11 @@ impl Collatz {
 }
 
 pub fn collatz(n: u64) -> usize {
-    if n == 0 || n == 1 {
+    if n == 0 {
         return 0;
     }
-    // First value is already counted by the iterator
-    1 + Collatz::new(n).count()
+    if n == 1 {
+        return 0;  // Special case: sequence doesn't continue past 1
+    }
+    Collatz::new(n).count() // The iterator will include all values including the terminal 1
 }
