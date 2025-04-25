@@ -88,3 +88,14 @@ impl RomanNumber {
         })
     }
 }
+
+impl Iterator for RomanNumber {
+    type Item = RomanNumber;
+    
+    fn next(&mut self) -> Option<Self::Item> {
+        let current_value = self.to_u32();
+        let next_value = current_value + 1;
+        *self = RomanNumber::from(next_value);
+        Some(self.clone())
+    }
+}
