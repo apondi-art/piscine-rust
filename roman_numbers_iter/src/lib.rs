@@ -29,46 +29,36 @@ impl From<u32> for RomanDigit {
 pub struct RomanNumber(pub Vec<RomanDigit>);
 
 impl From<u32> for RomanNumber {
-    fn from(n: u32) -> Self {
+    fn from(mut n: u32) -> Self {
         if n == 0 {
             return RomanNumber(vec![RomanDigit::Nulla]);
         }
 
-        let mut quotient = n;
-        let mut place = 0;
-        let mut reverse_roman = Vec::new();
+        let mut result = Vec::new();
+        let values = [
+            (1000, RomanDigit::M),
+            (900, RomanDigit::C),
+            (500, RomanDigit::D),
+            (400, RomanDigit::C),
+            (100, RomanDigit::C),
+            (90, RomanDigit::X),
+            (50, RomanDigit::L),
+            (40, RomanDigit::X),
+            (10, RomanDigit::X),
+            (9, RomanDigit::I),
+            (5, RomanDigit::V),
+            (4, RomanDigit::I),
+            (1, RomanDigit::I),
+        ];
 
-        while quotient != 0 {
-            let remainder = quotient % 10;
-            quotient /= 10;
-            place += 1;
-            
-            match remainder {
-                4 => {
-                    reverse_roman.push(RomanDigit::from(10_u32.pow(place)/2));
-                    reverse_roman.push(RomanDigit::from(10_u32.pow(place - 1)));
-                },
-                9 => {
-                    reverse_roman.push(RomanDigit::from(10_u32.pow(place)));
-                    reverse_roman.push(RomanDigit::from(10_u32.pow(place - 1)));
-                },
-                5..=8 => {
-                    for _ in 0..(remainder - 5) {
-                        reverse_roman.push(RomanDigit::from(10_u32.pow(place - 1)));
-                    }
-                    reverse_roman.push(RomanDigit::from(10_u32.pow(place)/2));
-                },
-                1..=3 => {
-                    for _ in 0..remainder {
-                        reverse_roman.push(RomanDigit::from(10_u32.pow(place - 1)));
-                    }
-                },
-                _ => {},
+        for (value, digit) in values {
+            while n >= value {
+                n -= value;
+                result.push(digit);
             }
         }
 
-        reverse_roman.reverse();
-        RomanNumber(reverse_roman)
+        RomanNumber(result)
     }
 }
 
@@ -94,13 +84,8 @@ impl Iterator for RomanNumber {
     
     fn next(&mut self) -> Option<Self::Item> {
         let current_value = self.to_u32();
-        if current_value >= 5000 {  // Stop at maximum representable value
-            return None;
-        }
-        
-        let next_value = current_value + 1;
-        let next_numeral = RomanNumber::from(next_value);
-        *self = next_numeral.clone();
-        Some(next_numeral)
+        let next_num = RomanNumber::from(current_value + 1);
+        *self = next_num.clone();
+        Some(next_num)
     }
 }
