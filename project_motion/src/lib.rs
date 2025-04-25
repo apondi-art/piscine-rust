@@ -37,17 +37,23 @@ impl Iterator for ThrowObject {
         
         // Calculate new position and velocity
         // Horizontal motion: constant velocity
-        self.actual_position.x = self.init_position.x + self.init_velocity.x * self.time;
+        self.actual_position.x = (self.init_position.x + self.init_velocity.x * self.time).round() / 10.0 * 10.0;
         
         // Vertical motion: affected by gravity
         // Position formula: y = y₀ + v₀t - ½gt²
-        self.actual_position.y = self.init_position.y + 
-                               self.init_velocity.y * self.time - 
-                               0.5 * GRAVITY * self.time * self.time;
+        let y_pos = self.init_position.y + 
+                  self.init_velocity.y * self.time - 
+                  0.5 * GRAVITY * self.time * self.time;
+        
+        // Round to 1 decimal place to match expected output
+        self.actual_position.y = (y_pos * 10.0).round() / 10.0;
         
         // Velocity formula: v = v₀ - gt
         self.actual_velocity.x = self.init_velocity.x;
-        self.actual_velocity.y = self.init_velocity.y - GRAVITY * self.time;
+        
+        // Round to 1 decimal place to match expected output
+        let y_vel = self.init_velocity.y - GRAVITY * self.time;
+        self.actual_velocity.y = (y_vel * 10.0).round() / 10.0;
         
         // Check if the object has reached the ground or below (y ≤ 0)
         if self.actual_position.y <= 0.0 {
