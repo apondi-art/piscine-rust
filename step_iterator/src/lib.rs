@@ -1,4 +1,5 @@
-use std::ops::{Add, PartialOrd};
+use std::ops::Add;
+use std::cmp::PartialOrd;
 
 pub struct StepIterator<T> {
     current: T,
