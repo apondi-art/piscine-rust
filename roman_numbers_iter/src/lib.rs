@@ -94,8 +94,13 @@ impl Iterator for RomanNumber {
     
     fn next(&mut self) -> Option<Self::Item> {
         let current_value = self.to_u32();
+        if current_value >= 5000 {  // Stop at maximum representable value
+            return None;
+        }
+        
         let next_value = current_value + 1;
-        *self = RomanNumber::from(next_value);
-        Some(self.clone())
+        let next_numeral = RomanNumber::from(next_value);
+        *self = next_numeral.clone();
+        Some(next_numeral)
     }
 }
