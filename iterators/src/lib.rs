@@ -26,7 +26,7 @@ impl Collatz {
 }
 
 pub fn collatz(n: u64) -> usize {
-    if n == 0 {
+    if n == 0 || n == 1 {
         return 0;
     }
     Collatz::new(n).count()
