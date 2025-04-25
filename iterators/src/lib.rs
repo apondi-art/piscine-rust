@@ -4,7 +4,7 @@ pub struct Collatz {
 }
 
 impl Iterator for Collatz {
-    type Item = Collatz;  // Change the Item type from u64 to Collatz
+    type Item = u64;  // Change back to u64
     
     fn next(&mut self) -> Option<Self::Item> {
         if self.v == 1 {
@@ -17,7 +17,7 @@ impl Iterator for Collatz {
             self.v * 3 + 1
         };
         
-        Some(Collatz { v: self.v })  // Return a new Collatz instance
+        Some(self.v)  // Return just the value
     }
 }
 
